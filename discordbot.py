@@ -139,7 +139,7 @@ async def on_voice_state_update(member, before, after):
         else:
             if member.guild.voice_client is None:
                 await asyncio.sleep(0.5)
-                # await after.channel.connect()
+                await after.channel.connect()
             else:
                 if member.guild.voice_client.channel is after.channel:
                     text = member.name + 'さんが入室しました'

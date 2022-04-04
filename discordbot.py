@@ -17,7 +17,8 @@ with open('emoji_ja.json', encoding='utf-8') as file:
 
 @client.event
 async def on_ready():
-    presence = f'{prefix}ヘルプ | 0/{len(client.guilds)}サーバー'
+    # presence = f'{prefix}ヘルプ | 0/{len(client.guilds)}サーバー'
+    presence = f'ステンバーイ...'
     await client.change_presence(activity=discord.Game(name=presence))
 
 @client.event
@@ -132,12 +133,13 @@ async def on_message(message):
 async def on_voice_state_update(member, before, after):
     if before.channel is None:
         if member.id == client.user.id:
-            presence = f'{prefix}ヘルプ | {len(client.voice_clients)}/{len(client.guilds)}サーバー'
+            # presence = f'{prefix}ヘルプ | {len(client.voice_clients)}/{len(client.guilds)}サーバー'
+            presence = f'チャット読み上げまっす'
             await client.change_presence(activity=discord.Game(name=presence))
         else:
             if member.guild.voice_client is None:
                 await asyncio.sleep(0.5)
-                await after.channel.connect()
+                # await after.channel.connect()
             else:
                 if member.guild.voice_client.channel is after.channel:
                     text = member.name + 'さんが入室しました'
@@ -147,7 +149,8 @@ async def on_voice_state_update(member, before, after):
                     member.guild.voice_client.play(discord.FFmpegPCMAudio(mp3url))
     elif after.channel is None:
         if member.id == client.user.id:
-            presence = f'{prefix}ヘルプ | {len(client.voice_clients)}/{len(client.guilds)}サーバー'
+            # presence = f'{prefix}ヘルプ | {len(client.voice_clients)}/{len(client.guilds)}サーバー'
+            presence = f'チャット読み上げまっす'
             await client.change_presence(activity=discord.Game(name=presence))
         else:
             if member.guild.voice_client:

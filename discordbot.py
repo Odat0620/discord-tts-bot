@@ -6,12 +6,14 @@ import traceback
 import re
 import emoji
 import json
+import r
 
 prefix = os.getenv('DISCORD_BOT_PREFIX', default='🦑')
 token = os.environ['DISCORD_BOT_TOKEN']
 voicevox_key = os.environ['VOICEVOX_KEY']
 voicevox_speaker = os.getenv('VOICEVOX_SPEAKER', default='2')
 client = commands.Bot(command_prefix=prefix)
+db = r.connect()
 with open('emoji_ja.json', encoding='utf-8') as file:
     emoji_dataset = json.load(file)
 
@@ -21,18 +23,18 @@ async def on_ready():
     presence = f'ステンバーイ...'
     await client.change_presence(activity=discord.Game(name=presence))
 
-@client.event
-async def on_guild_join(guild):
-    presence = f'{prefix}ヘルプ | {len(client.voice_clients)}/{len(client.guilds)}サーバー'
-    await client.change_presence(activity=discord.Game(name=presence))
+# @client.event
+# async def on_guild_join(guild):
+#     presence = f'{prefix}ヘルプ | {len(client.voice_clients)}/{len(client.guilds)}サーバー'
+#     await client.change_presence(activity=discord.Game(name=presence))
 
-@client.event
-async def on_guild_remove(guild):
-    presence = f'{prefix}ヘルプ | {len(client.voice_clients)}/{len(client.guilds)}サーバー'
-    await client.change_presence(activity=discord.Game(name=presence))
+# @client.event
+# async def on_guild_remove(guild):
+#     presence = f'{prefix}ヘルプ | {len(client.voice_clients)}/{len(client.guilds)}サーバー'
+#     await client.change_presence(activity=discord.Game(name=presence))
 
 @client.command()
-async def 接続(ctx):
+async def 接続(ctx: commands.Context):
     if ctx.message.guild:
         if ctx.author.voice is None:
             await ctx.send('ボイスチャンネルに接続してから呼び出してください。')
@@ -48,7 +50,7 @@ async def 接続(ctx):
                 await ctx.author.voice.channel.connect()
 
 @client.command()
-async def 切断(ctx):
+async def 切断(ctx: commands.Context):
     if ctx.message.guild:
         if ctx.voice_client is None:
             await ctx.send('ボイスチャンネルに接続していません。')
@@ -62,8 +64,15 @@ async def on_message(message):
             if not message.content.startswith(prefix):
                 text = message.content
 
+                uname = r.get_user_name(message.author.discriminator)
+                if uname:
+                    text = uname + '、' + text
+                else:
+                    text = message.author.name + '、' + text
+
+
                 # Add author's name
-                text = message.author.name + '、' + text
+                # text = message.author.name + '、' + text
 
                 # Replace new line
                 text = text.replace('\n', '、')
@@ -74,6 +83,9 @@ async def on_message(message):
                 for user_id in match:
                     user = await client.fetch_user(user_id)
                     user_name = f'、{user.name}へのメンション、'
+                    uname = r.get_user_name(user.discriminator)
+                    if uname:
+                        user_name = f'、{uname}へのメンション、'
                     text = re.sub(rf'<@!?{user_id}>', user_name, text)
 
                 # Replace mention to role
@@ -139,10 +151,14 @@ async def on_voice_state_update(member, before, after):
         else:
             if member.guild.voice_client is None:
                 await asyncio.sleep(0.5)
-                # await after.channel.connect()
+                await after.channel.connect()
             else:
                 if member.guild.voice_client.channel is after.channel:
-                    text = member.name + 'さんが入室しました'
+                    uname = r.get_user_name(member.discriminator)
+                    if uname:
+                        text = uname + 'さんが入室しました'
+                    else:
+                        text = member.name + 'さんが入室しました'
                     mp3url = f'https://api.su-shiki.com/v2/voicevox/audio/?text={text}&key={voicevox_key}&speaker={voicevox_speaker}&intonationScale=1'
                     while member.guild.voice_client.is_playing():
                         await asyncio.sleep(0.5)
@@ -150,7 +166,7 @@ async def on_voice_state_update(member, before, after):
     elif after.channel is None:
         if member.id == client.user.id:
             # presence = f'{prefix}ヘルプ | {len(client.voice_clients)}/{len(client.guilds)}サーバー'
-            presence = f'チャット読み上げまっす'
+            presence = f'ステンバーイ...'
             await client.change_presence(activity=discord.Game(name=presence))
         else:
             if member.guild.voice_client:
@@ -159,7 +175,11 @@ async def on_voice_state_update(member, before, after):
                         await asyncio.sleep(0.5)
                         await member.guild.voice_client.disconnect()
                     else:
-                        text = member.name + 'さんが退室しました'
+                        uname = r.get_user_name(member.discriminator)
+                        if uname:
+                            text = uname + 'さんが退室しました'
+                        else:
+                            text = member.name + 'さんが退室しました'
                         mp3url = f'https://api.su-shiki.com/v2/voicevox/audio/?text={text}&key={voicevox_key}&speaker={voicevox_speaker}&intonationScale=1'
                         while member.guild.voice_client.is_playing():
                             await asyncio.sleep(0.5)
@@ -174,17 +194,49 @@ async def on_voice_state_update(member, before, after):
                     await after.channel.connect()
 
 @client.event
-async def on_command_error(ctx, error):
-    orig_error = getattr(error, 'original', error)
-    error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
-    await ctx.send(error_msg)
+async def on_command_error(ctx: commands.Context, error):
+    # orig_error = getattr(error, 'original', error)
+    # error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
+    await ctx.send("コマンドが間違っているかも...")
 
 @client.command()
-async def ヘルプ(ctx):
-    message = f'''◆◇◆{client.user.name}の使い方◆◇◆
-{prefix}＋コマンドで命令できます。
-{prefix}接続：ボイスチャンネルに接続します。
-{prefix}切断：ボイスチャンネルから切断します。'''
-    await ctx.send(message)
+async def 呼び方変更(ctx: commands.Context, uid: str, new_call: str):
+    # uidを検索して存在するか確認
+    is_find = False
+    for m in ctx.message.guild.members:
+        if m.discriminator == uid:
+            is_find = True
+            if db.set(uid, new_call):
+                await ctx.send(f"{m.name} さんの呼び方を「{new_call}」に変更したよ。")
+    if is_find == False:
+        await ctx.send("IDが間違っているか、存在しないかも...")
+
+
+@client.command()
+async def ヘルプ(ctx: commands.Context):
+    embed = discord.Embed(title=f"```{prefix} + コマンドで命令できます！```", color=0x00aa00)
+    embed.set_author(name=f"◆◇◆{client.user.name}の使い方◆◇◆")
+    embed.add_field(name=f"```{prefix}接続```", value="ボイスチャンネルに接続します。", inline=False)
+    embed.add_field(name=f"```{prefix}切断```", value="ボイスチャンネルから切断します。", inline=False)
+    embed.add_field(name=f"```{prefix}呼び方変更 ID 新しい呼び方```", value=f"人の呼び方を変更します。IDは「名前#1234」の数字の部分。\n 例：__読み上げBOT#8420__の場合 ```{prefix}呼び方変更 8420 やすお```", inline=False)
+
+
+#     message = f'''◆◇◆{client.user.name}の使い方◆◇◆
+# {prefix}＋コマンドで命令できます。
+# {prefix}接続：ボイスチャンネルに接続します。
+# {prefix}切断：ボイスチャンネルから切断します。
+# {prefix}呼び方変更　ID　新しい呼び方：人の呼び方を変更します。IDは「名前#1234」の数字の部分。
+# 例：  ```{prefix}呼び方を変更 1234 やすお``` '''
+    await ctx.send(embed=embed)
+
+# デバッグ用コマンド
+@client.command()
+async def t(ctx: commands.Context):
+    user = ctx.message.guild.members[1]
+    # pprint.pprint(dir(ctx.message.guild.members[0]))
+    print("***********************")
+    print(user.discriminator)
+    print(type(user.discriminator))
+    print(str(user))
 
 client.run(token)

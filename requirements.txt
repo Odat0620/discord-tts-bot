@@ -1,3 +1,3 @@
 discord.py[voice]
 emoji
-redis==3.3.11
+redis==4.2.2

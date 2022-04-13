@@ -25,7 +25,7 @@ heroku へデプロイ、もしくはローカルの Docker 環境でも実行�
 
 ## **heroku へデプロイ**
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Odat0620/discord-readaloud-bot)
 
 上のボタンからデプロイの設定へアクセスし入力欄を埋めて行きます。
 <br>
@@ -64,7 +64,7 @@ Resources タブから Dyno を起動すると、BOT がオンラインになり
 最初に環境変数を設定します。<br>
 アプリのルートディレクトリ(docker-compose.yml のあるディレクトリ)に .env ファイルを作成し環境変数を記述して行きます。
 
-```py
+```sh
 DISCORD_BOT_PREFIX=$ #コマンドのプレフィックス。空欄でも可。空欄にすると”$”に設定されます。
 DISCORD_BOT_TOKEN=メモして置いたアクセストークン #BOTのアクセストークン
 VOICEVOX_KEY=メモして置いたapiキー #WEB版VOICEVOXのapiキー

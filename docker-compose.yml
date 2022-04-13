@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+  python:
+    restart: always
+    build: .
+    environment:
+      DISCORD_BOT_PREFIX: $DISCORD_BOT_PREFIX
+      DISCORD_BOT_TOKEN: $DISCORD_BOT_TOKEN
+      VOICEVOX_KEY: $VOICEVOX_KEY
+      VOICEVOX_SPEAKER: $VOICEVOX_SPEAKER
+      REDIS_URL: $REDIS_URL
+    container_name: "python3"
+    working_dir: "/disbot"
+    command: python discordbot.py
+    tty: true
+    volumes:
+      - .:/disbot
+    depends_on:
+      - db
+
+  db:
+    image: redis:latest
+    container_name: "db-redis"
+    command: redis-server --appendonly yes
+    volumes:
+      - db-volume:/data
+    ports:
+      - 6379:6379
+
+volumes:
+  db-volume:

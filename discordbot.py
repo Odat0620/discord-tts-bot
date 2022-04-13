@@ -19,19 +19,8 @@ with open('emoji_ja.json', encoding='utf-8') as file:
 
 @client.event
 async def on_ready():
-    # presence = f'{prefix}ヘルプ | 0/{len(client.guilds)}サーバー'
     presence = f'ステンバーイ...'
     await client.change_presence(activity=discord.Game(name=presence))
-
-# @client.event
-# async def on_guild_join(guild):
-#     presence = f'{prefix}ヘルプ | {len(client.voice_clients)}/{len(client.guilds)}サーバー'
-#     await client.change_presence(activity=discord.Game(name=presence))
-
-# @client.event
-# async def on_guild_remove(guild):
-#     presence = f'{prefix}ヘルプ | {len(client.voice_clients)}/{len(client.guilds)}サーバー'
-#     await client.change_presence(activity=discord.Game(name=presence))
 
 @client.command()
 async def 接続(ctx: commands.Context):
@@ -69,10 +58,6 @@ async def on_message(message):
                     text = uname + '、' + text
                 else:
                     text = message.author.name + '、' + text
-
-
-                # Add author's name
-                # text = message.author.name + '、' + text
 
                 # Replace new line
                 text = text.replace('\n', '、')
@@ -145,7 +130,6 @@ async def on_message(message):
 async def on_voice_state_update(member, before, after):
     if before.channel is None:
         if member.id == client.user.id:
-            # presence = f'{prefix}ヘルプ | {len(client.voice_clients)}/{len(client.guilds)}サーバー'
             presence = f'チャット読み上げまっす'
             await client.change_presence(activity=discord.Game(name=presence))
         else:
@@ -165,7 +149,6 @@ async def on_voice_state_update(member, before, after):
                     member.guild.voice_client.play(discord.FFmpegPCMAudio(mp3url))
     elif after.channel is None:
         if member.id == client.user.id:
-            # presence = f'{prefix}ヘルプ | {len(client.voice_clients)}/{len(client.guilds)}サーバー'
             presence = f'ステンバーイ...'
             await client.change_presence(activity=discord.Game(name=presence))
         else:
@@ -209,7 +192,7 @@ async def 呼び方変更(ctx: commands.Context, uid: str, new_call: str):
             if db.set(uid, new_call):
                 await ctx.send(f"{m.name} さんの呼び方を「{new_call}」に変更したよ。")
     if is_find == False:
-        await ctx.send("IDが間違っているか、存在しないかも...")
+        await ctx.send("タグが間違っているか、存在しないかも...")
 
 
 @client.command()
@@ -218,25 +201,17 @@ async def ヘルプ(ctx: commands.Context):
     embed.set_author(name=f"◆◇◆{client.user.name}の使い方◆◇◆")
     embed.add_field(name=f"```{prefix}接続```", value="ボイスチャンネルに接続します。", inline=False)
     embed.add_field(name=f"```{prefix}切断```", value="ボイスチャンネルから切断します。", inline=False)
-    embed.add_field(name=f"```{prefix}呼び方変更 ID 新しい呼び方```", value=f"人の呼び方を変更します。IDは「名前#1234」の数字の部分。\n 例：__読み上げBOT#8420__の場合 ```{prefix}呼び方変更 8420 やすお```", inline=False)
-
-
-#     message = f'''◆◇◆{client.user.name}の使い方◆◇◆
-# {prefix}＋コマンドで命令できます。
-# {prefix}接続：ボイスチャンネルに接続します。
-# {prefix}切断：ボイスチャンネルから切断します。
-# {prefix}呼び方変更　ID　新しい呼び方：人の呼び方を変更します。IDは「名前#1234」の数字の部分。
-# 例：  ```{prefix}呼び方を変更 1234 やすお``` '''
+    embed.add_field(name=f"```{prefix}呼び方変更 タグ 新しい呼び方```", value=f"人の呼び方を変更します。タグは「名前#1234」の数字の部分。\n 例：__{ctx.bot.user}__の場合 ```{prefix}呼び方変更 {ctx.bot.user.discriminator} やすお```", inline=False)
     await ctx.send(embed=embed)
 
 # デバッグ用コマンド
-@client.command()
-async def t(ctx: commands.Context):
-    user = ctx.message.guild.members[1]
-    # pprint.pprint(dir(ctx.message.guild.members[0]))
-    print("***********************")
-    print(user.discriminator)
-    print(type(user.discriminator))
-    print(str(user))
+# @client.command()
+# async def t(ctx: commands.Context):
+#     user = ctx.message.guild.members[1]
+#     # pprint.pprint(dir(ctx.message.guild.members[0]))
+#     print("***********************")
+#     print(user.discriminator)
+#     print(type(user.discriminator))
+#     print(str(user))
 
 client.run(token)

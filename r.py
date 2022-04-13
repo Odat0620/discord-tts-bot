@@ -10,7 +10,7 @@ def connect():
     return redis.from_url(
         url=redis_url,
         decode_responses=True,
-  )
+    )
 
 def get_user_name(id: str):
     con = connect()

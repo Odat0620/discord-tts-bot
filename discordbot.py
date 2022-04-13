@@ -2,7 +2,7 @@ import asyncio
 import discord
 from discord.ext import commands
 import os
-import traceback
+# import traceback
 import re
 import emoji
 import json
@@ -19,7 +19,7 @@ with open('emoji_ja.json', encoding='utf-8') as file:
 
 @client.event
 async def on_ready():
-    presence = f'ステンバーイ...'
+    presence = "ステンバーイ..."
     await client.change_presence(activity=discord.Game(name=presence))
 
 @client.command()
@@ -130,7 +130,7 @@ async def on_message(message):
 async def on_voice_state_update(member, before, after):
     if before.channel is None:
         if member.id == client.user.id:
-            presence = f'チャット読み上げまっす'
+            presence = "チャット読み上げまっす"
             await client.change_presence(activity=discord.Game(name=presence))
         else:
             if member.guild.voice_client is None:
@@ -149,7 +149,7 @@ async def on_voice_state_update(member, before, after):
                     member.guild.voice_client.play(discord.FFmpegPCMAudio(mp3url))
     elif after.channel is None:
         if member.id == client.user.id:
-            presence = f'ステンバーイ...'
+            presence = "ステンバーイ..."
             await client.change_presence(activity=discord.Game(name=presence))
         else:
             if member.guild.voice_client:
@@ -191,7 +191,7 @@ async def 呼び方変更(ctx: commands.Context, uid: str, new_call: str):
             is_find = True
             if db.set(uid, new_call):
                 await ctx.send(f"{m.name} さんの呼び方を「{new_call}」に変更したよ。")
-    if is_find == False:
+    if is_find is False:
         await ctx.send("タグが間違っているか、存在しないかも...")
 
 

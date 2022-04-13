@@ -1,7 +1,7 @@
 {
   "name": "discord読み上げBOT",
   "description": "テキストチャンネルに送られてきたチャットをボイスチャンネルで読み上げる BOT です。",
-  "repository": "https://github.com/Odat0620/discord-readaloud-bot",
+  "repository": "https://github.com/Odat0620/discord-tts-bot",
   "keywords": ["python", "discord", "bot"],
   "buildpacks": [
     {

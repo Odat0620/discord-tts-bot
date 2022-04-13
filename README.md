@@ -25,7 +25,7 @@ heroku へデプロイ、もしくはローカルの Docker 環境でも実行�
 
 ## **heroku へデプロイ**
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Odat0620/discord-readaloud-bot)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Odat0620/discord-tts-bot)
 
 上のボタンからデプロイの設定へアクセスし入力欄を埋めて行きます。
 <br>
